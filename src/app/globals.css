@@ -1,0 +1,250 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .animate-fadeIn {
+    animation: fadeIn 0.5s ease-in-out forwards;
+    opacity: 0;
+  }
+
+  .animate-bounce-slow {
+    animation: bounceSlow 3s ease-in-out infinite;
+  }
+
+  .animate-pulse-soft {
+    animation: pulseSoft 4s ease-in-out infinite;
+  }
+
+  .animate-slide-in-left {
+    animation: slideInLeft 0.5s ease-out forwards;
+  }
+
+  .animate-slide-in-right {
+    animation: slideInRight 0.5s ease-out forwards;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.3s ease-out forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(5px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes bounceSlow {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  @keyframes pulseSoft {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
+
+  @keyframes slideInLeft {
+    from {
+      transform: translateX(-20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideInRight {
+    from {
+      transform: translateX(20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      transform: scale(0.95);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 5.9% 10%;
+    --radius: 0.5rem;
+
+    /* Chart colors */
+    --chart-1: 240 5.9% 10%;
+    --chart-2: 217 91.2% 59.8%;
+    --chart-3: 95 69.9% 49.8%;
+    --chart-4: 33 98% 65.3%;
+    --chart-5: 160 84.1% 39.4%;
+
+    /* Weather-specific colors */
+    --temperature-freezing: 242 100% 42.4%;
+    --temperature-cold: 217 91.2% 59.8%;
+    --temperature-mild: 225 10% 54.9%;
+    --temperature-warm: 35 91.2% 55.9%;
+    --temperature-hot: 19 92.1% 54.9%;
+
+    /* Icon colors */
+    --icon-sun: 47 96.1% 56.1%;
+    --icon-rain: 217 91.2% 59.8%;
+    --icon-snow: 212 20% 83.9%;
+    --icon-cloud: 230 10% 76.9%;
+    --icon-thunder: 261 93.6% 69.4%;
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+
+    /* Chart colors - dark mode */
+    --chart-1: 210 40% 98%;
+    --chart-2: 217 91.2% 69.8%;
+    --chart-3: 95 69.9% 60%;
+    --chart-4: 33 98% 70%;
+    --chart-5: 160 84.1% 60%;
+
+    /* Weather-specific colors - dark mode */
+    --temperature-freezing: 242 100% 82.4%;
+    --temperature-cold: 217 91.2% 79.8%;
+    --temperature-mild: 225 10% 74.9%;
+    --temperature-warm: 45 91.2% 75.9%;
+    --temperature-hot: 6 92.1% 64.9%;
+
+    /* Icon colors - dark mode */
+    --icon-sun: 47 96.1% 76.1%;
+    --icon-rain: 217 91.2% 79.8%;
+    --icon-snow: 212 20% 93.9%;
+    --icon-cloud: 230 10% 86.9%;
+    --icon-thunder: 261 93.6% 79.4%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading font-medium;
+  }
+
+  input, textarea, select {
+    @apply focus-visible:ring-2 focus-visible:ring-primary;
+  }
+}
+
+@layer components {
+  .weather-card {
+    @apply transition-all duration-300 hover:shadow-md;
+  }
+
+  .page-gradient {
+    @apply bg-gradient-to-b from-background to-muted/30;
+  }
+
+  .card-gradient {
+    @apply bg-gradient-to-r from-muted/50 to-background;
+  }
+
+  .glassmorphism {
+    @apply bg-white/40 dark:bg-black/40 backdrop-blur-lg border border-white/20 dark:border-gray-800/20 shadow-xl;
+  }
+
+  .nav-link {
+    @apply relative py-2 text-foreground/80 hover:text-foreground transition-colors after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary after:scale-x-0 hover:after:scale-x-100 after:transition-transform;
+  }
+
+  .nav-link-active {
+    @apply text-foreground after:scale-x-100;
+  }
+
+  /* Улучшенные стили для карточек */
+  .feature-card {
+    @apply rounded-xl border bg-card text-card-foreground shadow transition-all duration-300 hover:shadow-md hover:-translate-y-1;
+  }
+
+  /* Улучшенные кнопки */
+  .button-glow {
+    @apply relative overflow-hidden before:absolute before:inset-0 before:bg-primary/20 before:opacity-0 hover:before:opacity-100 before:transition-opacity before:rounded-md;
+  }
+
+  /* Улучшенные таблицы */
+  .table-improved {
+    @apply w-full border-collapse;
+  }
+
+  .table-improved th {
+    @apply text-left p-3 bg-muted/50 font-medium text-muted-foreground;
+  }
+
+  .table-improved td {
+    @apply p-3 border-t border-border/40;
+  }
+
+  .table-improved tr:hover {
+    @apply bg-muted/20;
+  }
+}

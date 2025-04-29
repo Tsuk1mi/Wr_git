@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: weatherwear-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=True
+      - OPENWEATHER_API_KEY=92bd556782d315772d2adc1076a51af5
+    volumes:
+      - ./backend:/app
+    restart: unless-stopped
+    networks:
+      - weatherwear-network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: weatherwear-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:8000
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - weatherwear-network
+
+networks:
+  weatherwear-network:
+    driver: bridge

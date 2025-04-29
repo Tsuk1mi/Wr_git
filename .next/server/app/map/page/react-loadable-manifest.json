@@ -1,0 +1,9 @@
+{
+  "[project]/src/components/weather-map.tsx [app-client] (ecmascript, next/dynamic entry)": {
+    "id": "[project]/src/components/weather-map.tsx [app-client] (ecmascript, next/dynamic entry)",
+    "files": [
+      "static/chunks/_6fefc9c3._.js",
+      "static/chunks/src_components_weather-map_tsx_40156109._.js"
+    ]
+  }
+}

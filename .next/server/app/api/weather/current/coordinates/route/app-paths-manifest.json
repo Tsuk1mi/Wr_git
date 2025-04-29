@@ -1,0 +1,3 @@
+{
+  "/api/weather/current/coordinates/route": "app/api/weather/current/coordinates/route.js"
+}
