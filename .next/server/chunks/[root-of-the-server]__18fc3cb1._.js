@@ -59,22 +59,22 @@ module.exports = mod;
 var { g: global, __dirname } = __turbopack_context__;
 {
 __turbopack_context__.s({
-    "GET": (()=>GET)
+    "GET": (()=>GET),
+    "dynamic": (()=>dynamic)
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/server.js [app-route] (ecmascript)");
 ;
-// OpenWeatherMap API ключ
-const API_KEY = process.env.OPENWEATHER_API_KEY || 'f34e61eb7108bf62fb3ed7e7e9a37aaa'; // Используем публичный API ключ для тестирования
-async function GET(request, { params }) {
-    const cityId = params.cityId;
+const dynamic = 'force-dynamic'; // ✅ разрешает использовать асинхронные параметры
+const API_KEY = process.env.OPENWEATHER_API_KEY || 'c4b2992878138ac1210bc925ac188097';
+async function GET(request, context) {
+    const params = await context.params;
+    const { cityId } = await context.params;
     try {
-        // Запрос текущей погоды из OpenWeatherMap API
         const weatherResponse = await fetch(`https://api.openweathermap.org/data/2.5/weather?id=${cityId}&appid=${API_KEY}&units=metric&lang=ru`);
         if (!weatherResponse.ok) {
             throw new Error(`OpenWeatherMap API вернул статус: ${weatherResponse.status}`);
         }
         const openWeatherData = await weatherResponse.json();
-        // Преобразуем данные из OpenWeatherMap API в наш формат
         const weatherData = {
             temperature: {
                 air: {
@@ -110,7 +110,6 @@ async function GET(request, { params }) {
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(weatherData);
     } catch (error) {
         console.error('Ошибка при получении данных о погоде:', error);
-        // В случае ошибки, возвращаем мок данных с сообщением об ошибке
         const mockWeatherData = {
             temperature: {
                 air: {
@@ -146,29 +145,16 @@ async function GET(request, { params }) {
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(mockWeatherData);
     }
 }
-// Вспомогательные функции для преобразования данных
+// Вспомогательные функции
 function getPrecipitationType(weatherId) {
-    if (weatherId >= 200 && weatherId < 600) {
-        if (weatherId >= 300 && weatherId < 400) {
-            return 'drizzle';
-        } else if (weatherId >= 500 && weatherId < 600) {
-            return 'rain';
-        } else if (weatherId >= 600 && weatherId < 700) {
-            return 'snow';
-        }
-        return 'rain';
-    }
+    if (weatherId >= 300 && weatherId < 400) return 'drizzle';
+    if (weatherId >= 500 && weatherId < 600) return 'rain';
+    if (weatherId >= 600 && weatherId < 700) return 'snow';
     return 'none';
 }
 function getPrecipitationIntensity(weatherId) {
-    if (weatherId >= 500 && weatherId < 510) {
-        const intensity = weatherId - 500;
-        return Math.min(intensity / 2, 3); // Нормализуем до шкалы 0-3
-    }
-    if (weatherId >= 600 && weatherId < 610) {
-        const intensity = weatherId - 600;
-        return Math.min(intensity / 2, 3);
-    }
+    if (weatherId >= 500 && weatherId < 510) return Math.min((weatherId - 500) / 2, 3);
+    if (weatherId >= 600 && weatherId < 610) return Math.min((weatherId - 600) / 2, 3);
     return 0;
 }
 function getWindDirection(degrees) {

@@ -1,21 +1,18 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import type { WeatherData } from '@/types';
 
-// OpenWeatherMap API ключ
-const API_KEY = process.env.OPENWEATHER_API_KEY || 'f34e61eb7108bf62fb3ed7e7e9a37aaa'; // Используем публичный API ключ для тестирования
+export const dynamic = 'force-dynamic'; // ✅ важно для корректной работы параметров
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { cityId: string } }
-) {
-  const cityId = params.cityId;
+const API_KEY = process.env.OPENWEATHER_API_KEY || 'c4b2992878138ac1210bc925ac188097';
+
+export async function GET(request: NextRequest, context: { params: { cityId: string } }) {
+  const { cityId } = context.params;
   const searchParams = request.nextUrl.searchParams;
   const days = Number.parseInt(searchParams.get('days') || '5', 10);
 
   try {
-    // Запрос 5-дневного прогноза из OpenWeatherMap API (по 3 часа)
     const forecastResponse = await fetch(
-      `https://api.openweathermap.org/data/2.5/forecast?id=${cityId}&appid=${API_KEY}&units=metric&lang=ru`
+        `https://api.openweathermap.org/data/2.5/forecast?id=${cityId}&appid=${API_KEY}&units=metric&lang=ru`
     );
 
     if (!forecastResponse.ok) {
@@ -24,26 +21,23 @@ export async function GET(
 
     const openWeatherData = await forecastResponse.json();
 
-    // Группируем данные по дням (до указанного количества дней)
     const dailyForecasts = groupForecastByDay(openWeatherData.list);
     const limitedForecasts = dailyForecasts.slice(0, days);
 
-    // Преобразуем данные из OpenWeatherMap API в наш формат
     const forecastData: WeatherData[] = limitedForecasts.map(dayForecast => {
-      // Используем прогноз на полдень (или ближайшее доступное время)
       const midDayForecast = dayForecast.find(item =>
-        item.dt_txt.includes('12:00:00')
+          item.dt_txt.includes('12:00:00')
       ) || dayForecast[Math.floor(dayForecast.length / 2)];
 
       return {
         temperature: {
           air: {
             C: Math.round(midDayForecast.main.temp),
-            F: Math.round((midDayForecast.main.temp * 9/5) + 32),
+            F: Math.round((midDayForecast.main.temp * 9) / 5 + 32),
           },
           comfort: {
             C: Math.round(midDayForecast.main.feels_like),
-            F: Math.round((midDayForecast.main.feels_like * 9/5) + 32),
+            F: Math.round((midDayForecast.main.feels_like * 9) / 5 + 32),
           },
         },
         humidity: midDayForecast.main.humidity,
@@ -59,7 +53,7 @@ export async function GET(
           mm: Math.round(midDayForecast.main.pressure * 0.750062),
           hpa: midDayForecast.main.pressure,
         },
-        uv_index: 3, // OpenWeatherMap базовый API не предоставляет УФ-индекс
+        uv_index: 3,
         phenomena: {
           fog: midDayForecast.weather[0].id >= 700 && midDayForecast.weather[0].id < 800,
           thunder: midDayForecast.weather[0].id >= 200 && midDayForecast.weather[0].id < 300,
@@ -74,25 +68,17 @@ export async function GET(
   } catch (error) {
     console.error('Ошибка при получении прогноза погоды:', error);
 
-    // В случае ошибки, возвращаем мок данных прогноза
     const forecastData: WeatherData[] = [];
 
     for (let i = 0; i < days; i++) {
-      // Генерируем дату (сегодня + i дней)
       const date = new Date();
       date.setDate(date.getDate() + i);
       const dateStr = date.toISOString().split('T')[0];
 
       forecastData.push({
         temperature: {
-          air: {
-            C: 15 + i,
-            F: 59 + i * 2,
-          },
-          comfort: {
-            C: 13 + i,
-            F: 55 + i * 2,
-          },
+          air: { C: 15 + i, F: 59 + i * 2 },
+          comfort: { C: 13 + i, F: 55 + i * 2 },
         },
         humidity: 65,
         precipitation: {
@@ -139,28 +125,15 @@ function groupForecastByDay(forecastList: any[]): any[][] {
 }
 
 function getPrecipitationType(weatherId: number): 'rain' | 'snow' | 'drizzle' | 'none' {
-  if (weatherId >= 200 && weatherId < 600) {
-    if (weatherId >= 300 && weatherId < 400) {
-      return 'drizzle';
-    } else if (weatherId >= 500 && weatherId < 600) {
-      return 'rain';
-    } else if (weatherId >= 600 && weatherId < 700) {
-      return 'snow';
-    }
-    return 'rain';
-  }
+  if (weatherId >= 300 && weatherId < 400) return 'drizzle';
+  if (weatherId >= 500 && weatherId < 600) return 'rain';
+  if (weatherId >= 600 && weatherId < 700) return 'snow';
   return 'none';
 }
 
 function getPrecipitationIntensity(weatherId: number): number {
-  if (weatherId >= 500 && weatherId < 510) {
-    const intensity = weatherId - 500;
-    return Math.min(intensity / 2, 3); // Нормализуем до шкалы 0-3
-  }
-  if (weatherId >= 600 && weatherId < 610) {
-    const intensity = weatherId - 600;
-    return Math.min(intensity / 2, 3);
-  }
+  if (weatherId >= 500 && weatherId < 510) return Math.min((weatherId - 500) / 2, 3);
+  if (weatherId >= 600 && weatherId < 610) return Math.min((weatherId - 600) / 2, 3);
   return 0;
 }
 

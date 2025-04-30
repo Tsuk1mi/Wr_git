@@ -3,7 +3,7 @@ import { POPULAR_CITIES } from '@/config/constants';
 import type { City } from '@/types';
 
 const CITY_DATABASE: City[] = [
-  { id: 4368, name: 'Москва', region: 'Московская область' },
+  { id: 524901, name: 'Москва', region: 'Московская область' },
   { id: 4079, name: 'Санкт-Петербург', region: 'Ленинградская область' },
   { id: 5295, name: 'Новосибирск', region: 'Новосибирская область' },
   { id: 4517, name: 'Екатеринбург', region: 'Свердловская область' },
@@ -34,6 +34,10 @@ const CITY_DATABASE: City[] = [
   { id: 5557, name: 'Калининград', region: 'Калининградская область' },
 ];
 
+// Получаем API ключ OpenWeatherMap
+const API_KEY = process.env.OPENWEATHERMAP_API_KEY;
+const BASE_URL = 'https://api.openweathermap.org/data/2.5/weather';
+
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const query = searchParams.get('query') || '';
@@ -42,12 +46,45 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(POPULAR_CITIES);
   }
 
-  // Поиск городов, содержащих запрос (без учета регистра)
+  // Приводим запрос к нижнему регистру для поиска
   const queryLower = query.toLowerCase();
-  const results = CITY_DATABASE.filter(city =>
-    city.name.toLowerCase().includes(queryLower) ||
-    (city.region && city.region.toLowerCase().includes(queryLower))
-  ).slice(0, 10); // Ограничиваем результаты
 
-  return NextResponse.json(results);
+  // Пробуем найти город через OpenWeatherMap API
+  try {
+    // Формируем URL для запроса
+    const weatherResponse = await fetch(`${BASE_URL}?q=${query}&appid=${API_KEY}&lang=ru`);
+
+    if (!weatherResponse.ok) {
+      throw new Error('Ошибка получения данных с OpenWeatherMap');
+    }
+
+    // Парсим ответ
+    const weatherData = await weatherResponse.json();
+
+    if (weatherData.cod !== 200) {
+      throw new Error(`Город не найден: ${weatherData.message}`);
+    }
+
+    // Возвращаем данные о городе
+    const city = {
+      id: weatherData.id,
+      name: weatherData.name,
+      region: weatherData.sys.country, // можно дополнительно уточнить регион
+      weather: weatherData.weather[0].description,
+      temperature: weatherData.main.temp,
+      // Можно добавить дополнительные данные, такие как влажность, скорость ветра и т.д.
+    };
+
+    return NextResponse.json(city);
+  } catch (error) {
+    console.error('Ошибка при получении данных с OpenWeatherMap:', error);
+
+    // Если ошибка, возвращаем города из локальной базы данных
+    const results = CITY_DATABASE.filter(city =>
+        city.name.toLowerCase().includes(queryLower) ||
+        (city.region && city.region.toLowerCase().includes(queryLower))
+    ).slice(0, 10); // Ограничиваем результаты
+
+    return NextResponse.json(results);
+  }
 }

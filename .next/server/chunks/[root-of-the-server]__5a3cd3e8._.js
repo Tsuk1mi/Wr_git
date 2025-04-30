@@ -59,29 +59,26 @@ module.exports = mod;
 var { g: global, __dirname } = __turbopack_context__;
 {
 __turbopack_context__.s({
-    "GET": (()=>GET)
+    "GET": (()=>GET),
+    "dynamic": (()=>dynamic)
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/server.js [app-route] (ecmascript)");
 ;
-// OpenWeatherMap API ключ
-const API_KEY = process.env.OPENWEATHER_API_KEY || 'f34e61eb7108bf62fb3ed7e7e9a37aaa'; // Используем публичный API ключ для тестирования
-async function GET(request, { params }) {
-    const cityId = params.cityId;
+const dynamic = 'force-dynamic'; // ✅ важно для корректной работы параметров
+const API_KEY = process.env.OPENWEATHER_API_KEY || 'c4b2992878138ac1210bc925ac188097';
+async function GET(request, context) {
+    const { cityId } = context.params;
     const searchParams = request.nextUrl.searchParams;
     const days = Number.parseInt(searchParams.get('days') || '5', 10);
     try {
-        // Запрос 5-дневного прогноза из OpenWeatherMap API (по 3 часа)
         const forecastResponse = await fetch(`https://api.openweathermap.org/data/2.5/forecast?id=${cityId}&appid=${API_KEY}&units=metric&lang=ru`);
         if (!forecastResponse.ok) {
             throw new Error(`OpenWeatherMap API вернул статус: ${forecastResponse.status}`);
         }
         const openWeatherData = await forecastResponse.json();
-        // Группируем данные по дням (до указанного количества дней)
         const dailyForecasts = groupForecastByDay(openWeatherData.list);
         const limitedForecasts = dailyForecasts.slice(0, days);
-        // Преобразуем данные из OpenWeatherMap API в наш формат
         const forecastData = limitedForecasts.map((dayForecast)=>{
-            // Используем прогноз на полдень (или ближайшее доступное время)
             const midDayForecast = dayForecast.find((item)=>item.dt_txt.includes('12:00:00')) || dayForecast[Math.floor(dayForecast.length / 2)];
             return {
                 temperature: {
@@ -120,10 +117,8 @@ async function GET(request, { params }) {
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json(forecastData);
     } catch (error) {
         console.error('Ошибка при получении прогноза погоды:', error);
-        // В случае ошибки, возвращаем мок данных прогноза
         const forecastData = [];
         for(let i = 0; i < days; i++){
-            // Генерируем дату (сегодня + i дней)
             const date = new Date();
             date.setDate(date.getDate() + i);
             const dateStr = date.toISOString().split('T')[0];
@@ -177,27 +172,14 @@ function groupForecastByDay(forecastList) {
     return Object.values(days);
 }
 function getPrecipitationType(weatherId) {
-    if (weatherId >= 200 && weatherId < 600) {
-        if (weatherId >= 300 && weatherId < 400) {
-            return 'drizzle';
-        } else if (weatherId >= 500 && weatherId < 600) {
-            return 'rain';
-        } else if (weatherId >= 600 && weatherId < 700) {
-            return 'snow';
-        }
-        return 'rain';
-    }
+    if (weatherId >= 300 && weatherId < 400) return 'drizzle';
+    if (weatherId >= 500 && weatherId < 600) return 'rain';
+    if (weatherId >= 600 && weatherId < 700) return 'snow';
     return 'none';
 }
 function getPrecipitationIntensity(weatherId) {
-    if (weatherId >= 500 && weatherId < 510) {
-        const intensity = weatherId - 500;
-        return Math.min(intensity / 2, 3); // Нормализуем до шкалы 0-3
-    }
-    if (weatherId >= 600 && weatherId < 610) {
-        const intensity = weatherId - 600;
-        return Math.min(intensity / 2, 3);
-    }
+    if (weatherId >= 500 && weatherId < 510) return Math.min((weatherId - 500) / 2, 3);
+    if (weatherId >= 600 && weatherId < 610) return Math.min((weatherId - 600) / 2, 3);
     return 0;
 }
 function getWindDirection(degrees) {

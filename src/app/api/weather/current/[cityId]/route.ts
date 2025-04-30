@@ -1,19 +1,20 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import type { WeatherData } from '@/types';
 
-// OpenWeatherMap API ключ
-const API_KEY = process.env.OPENWEATHER_API_KEY || 'f34e61eb7108bf62fb3ed7e7e9a37aaa'; // Используем публичный API ключ для тестирования
+export const dynamic = 'force-dynamic'; // ✅ разрешает использовать асинхронные параметры
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { cityId: string } }
-) {
-  const cityId = params.cityId;
+const API_KEY = process.env.OPENWEATHER_API_KEY || 'c4b2992878138ac1210bc925ac188097';
+
+export async function GET(request: NextRequest, context: { params: { cityId: string } }) {
+  const params = await context.params;
+  const { cityId } = await context.params;
+
+
+
 
   try {
-    // Запрос текущей погоды из OpenWeatherMap API
     const weatherResponse = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?id=${cityId}&appid=${API_KEY}&units=metric&lang=ru`
+        `https://api.openweathermap.org/data/2.5/weather?id=${cityId}&appid=${API_KEY}&units=metric&lang=ru`
     );
 
     if (!weatherResponse.ok) {
@@ -22,16 +23,15 @@ export async function GET(
 
     const openWeatherData = await weatherResponse.json();
 
-    // Преобразуем данные из OpenWeatherMap API в наш формат
     const weatherData: WeatherData = {
       temperature: {
         air: {
           C: Math.round(openWeatherData.main.temp),
-          F: Math.round((openWeatherData.main.temp * 9/5) + 32),
+          F: Math.round((openWeatherData.main.temp * 9) / 5 + 32),
         },
         comfort: {
           C: Math.round(openWeatherData.main.feels_like),
-          F: Math.round((openWeatherData.main.feels_like * 9/5) + 32),
+          F: Math.round((openWeatherData.main.feels_like * 9) / 5 + 32),
         },
       },
       humidity: openWeatherData.main.humidity,
@@ -47,7 +47,7 @@ export async function GET(
         mm: Math.round(openWeatherData.main.pressure * 0.750062),
         hpa: openWeatherData.main.pressure,
       },
-      uv_index: 3, // OpenWeatherMap базовый API не предоставляет УФ-индекс
+      uv_index: 3,
       phenomena: {
         fog: openWeatherData.weather[0].id >= 700 && openWeatherData.weather[0].id < 800,
         thunder: openWeatherData.weather[0].id >= 200 && openWeatherData.weather[0].id < 300,
@@ -60,17 +60,10 @@ export async function GET(
   } catch (error) {
     console.error('Ошибка при получении данных о погоде:', error);
 
-    // В случае ошибки, возвращаем мок данных с сообщением об ошибке
     const mockWeatherData: WeatherData = {
       temperature: {
-        air: {
-          C: 15,
-          F: 59,
-        },
-        comfort: {
-          C: 13,
-          F: 55,
-        },
+        air: { C: 15, F: 59 },
+        comfort: { C: 13, F: 55 },
       },
       humidity: 65,
       precipitation: {
@@ -98,31 +91,18 @@ export async function GET(
   }
 }
 
-// Вспомогательные функции для преобразования данных
+// Вспомогательные функции
 
 function getPrecipitationType(weatherId: number): 'rain' | 'snow' | 'drizzle' | 'none' {
-  if (weatherId >= 200 && weatherId < 600) {
-    if (weatherId >= 300 && weatherId < 400) {
-      return 'drizzle';
-    } else if (weatherId >= 500 && weatherId < 600) {
-      return 'rain';
-    } else if (weatherId >= 600 && weatherId < 700) {
-      return 'snow';
-    }
-    return 'rain';
-  }
+  if (weatherId >= 300 && weatherId < 400) return 'drizzle';
+  if (weatherId >= 500 && weatherId < 600) return 'rain';
+  if (weatherId >= 600 && weatherId < 700) return 'snow';
   return 'none';
 }
 
 function getPrecipitationIntensity(weatherId: number): number {
-  if (weatherId >= 500 && weatherId < 510) {
-    const intensity = weatherId - 500;
-    return Math.min(intensity / 2, 3); // Нормализуем до шкалы 0-3
-  }
-  if (weatherId >= 600 && weatherId < 610) {
-    const intensity = weatherId - 600;
-    return Math.min(intensity / 2, 3);
-  }
+  if (weatherId >= 500 && weatherId < 510) return Math.min((weatherId - 500) / 2, 3);
+  if (weatherId >= 600 && weatherId < 610) return Math.min((weatherId - 600) / 2, 3);
   return 0;
 }
 

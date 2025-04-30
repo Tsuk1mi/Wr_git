@@ -244,7 +244,7 @@ fastify.get('/', async (request, reply) => {
 // Проксируем запросы к API OpenWeather
 fastify.get('/weather/search', async (request, reply) => {
   const query = request.query.query;
-  const apiKey = '92bd556782d315772d2adc1076a51af5';
+  const apiKey = 'c4b2992878138ac1210bc925ac188097';
 
   try {
     const response = await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${query}&limit=5&appid=${apiKey}`);
@@ -276,7 +276,7 @@ fastify.get('/weather/search', async (request, reply) => {
 fastify.get('/weather', async (request, reply) => {
   const lat = request.query.lat;
   const lon = request.query.lon;
-  const apiKey = '92bd556782d315772d2adc1076a51af5';
+  const apiKey = 'c4b2992878138ac1210bc925ac188097';
 
   if (!lat || !lon) {
     return reply.code(400).send({ error: 'Требуются параметры lat и lon' });
@@ -344,7 +344,7 @@ fastify.get('/weather', async (request, reply) => {
 // Маршрут для получения текущей погоды
 fastify.get('/weather/current/:cityId', async (request, reply) => {
   const cityId = request.params.cityId;
-  const apiKey = '92bd556782d315772d2adc1076a51af5';
+  const apiKey = 'c4b2992878138ac1210bc925ac188097';
 
   try {
     // Извлекаем координаты из city_id
@@ -417,7 +417,7 @@ fastify.get('/weather/current/:cityId', async (request, reply) => {
 fastify.get('/weather/forecast/:cityId', async (request, reply) => {
   const cityId = request.params.cityId;
   const days = parseInt(request.query.days || '7');
-  const apiKey = '92bd556782d315772d2adc1076a51af5';
+  const apiKey = 'c4b2992878138ac1210bc925ac188097';
 
   try {
     // Извлекаем координаты из city_id
