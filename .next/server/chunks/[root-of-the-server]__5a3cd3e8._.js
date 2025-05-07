@@ -67,7 +67,8 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$serv
 const dynamic = 'force-dynamic'; // ✅ важно для корректной работы параметров
 const API_KEY = process.env.OPENWEATHER_API_KEY || 'c4b2992878138ac1210bc925ac188097';
 async function GET(request, context) {
-    const { cityId } = context.params;
+    // Нужно дождаться, чтобы параметры загрузились, прежде чем их использовать
+    const { cityId } = await context.params; // Ждем, пока параметры загрузятся асинхронно
     const searchParams = request.nextUrl.searchParams;
     const days = Number.parseInt(searchParams.get('days') || '5', 10);
     try {

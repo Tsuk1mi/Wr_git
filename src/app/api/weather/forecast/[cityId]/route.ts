@@ -6,7 +6,8 @@ export const dynamic = 'force-dynamic'; // ✅ важно для коррект�
 const API_KEY = process.env.OPENWEATHER_API_KEY || 'c4b2992878138ac1210bc925ac188097';
 
 export async function GET(request: NextRequest, context: { params: { cityId: string } }) {
-  const { cityId } = context.params;
+  // Нужно дождаться, чтобы параметры загрузились, прежде чем их использовать
+  const { cityId } = await context.params; // Ждем, пока параметры загрузятся асинхронно
   const searchParams = request.nextUrl.searchParams;
   const days = Number.parseInt(searchParams.get('days') || '5', 10);
 

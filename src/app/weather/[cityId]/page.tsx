@@ -53,7 +53,7 @@ export default function WeatherPage() {
 
         // Получаем рекомендации по одежде
         const recommendationsResponse = await fetch(
-          `/api/recommendations/${cityId}?activity_type=${activityType}`
+          `src/app/api/recommendations/forecast/${cityId}?activity_type=${activityType}`
         );
         if (!recommendationsResponse.ok) {
           throw new Error("Ошибка при получении рекомендаций");

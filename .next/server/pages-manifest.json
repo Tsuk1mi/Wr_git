@@ -1,3 +1,1 @@
-{
-  "/api/recommendations/[cityId]": "pages/api/recommendations/[cityId].js"
-}
+{}

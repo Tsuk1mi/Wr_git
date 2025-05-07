@@ -162,7 +162,7 @@ function generateRecommendations(weatherData: any, activityType: ActivityType): 
     accessories.push('Бутылка воды');
     avoid.push('Тяжелая непрактичная одежда');
     avoid.push('Обувь без амортизации');
-  } else if (activityType === 'work') {
+  } else if (activityType === 'walk') {
     recommended.push('Деловая рубашка');
     recommended.push('Классические брюки');
     recommended.push('Формальная обувь');

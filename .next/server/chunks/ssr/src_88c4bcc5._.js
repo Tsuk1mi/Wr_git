@@ -385,7 +385,7 @@ const TEMPERATURE_RANGES = {
 };
 const POPULAR_CITIES = [
     {
-        id: 4368,
+        id: 524901,
         name: 'Москва'
     },
     {

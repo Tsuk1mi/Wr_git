@@ -440,7 +440,7 @@ const TEMPERATURE_RANGES = {
 };
 const POPULAR_CITIES = [
     {
-        id: 4368,
+        id: 524901,
         name: 'Москва'
     },
     {
@@ -5579,7 +5579,7 @@ function WeatherPage() {
                         }
                         const forecast = await forecastResponse.json();
                         // Получаем рекомендации по одежде
-                        const recommendationsResponse = await fetch(`/api/recommendations/${cityId}?activity_type=${activityType}`);
+                        const recommendationsResponse = await fetch(`src/app/api/recommendations/forecast/${cityId}?activity_type=${activityType}`);
                         if (!recommendationsResponse.ok) {
                             throw new Error("Ошибка при получении рекомендаций");
                         }

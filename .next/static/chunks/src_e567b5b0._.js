@@ -440,7 +440,7 @@ const TEMPERATURE_RANGES = {
 };
 const POPULAR_CITIES = [
     {
-        id: 4368,
+        id: 524901,
         name: 'Москва'
     },
     {
@@ -4347,7 +4347,7 @@ function ComparePage() {
         columnNumber: 5
     }, this);
 }
-_s(ComparePage, "+Tw6/L6t6P/XmlPwtzr9Mk9m1Q4=");
+_s(ComparePage, "Zcp873vQYkovNxK22m+MPb6CX74=");
 _c = ComparePage;
 var _c;
 __turbopack_context__.k.register(_c, "ComparePage");

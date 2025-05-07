@@ -1,4 +1,5 @@
 {
+  "/_not-found/page": "app/_not-found/page.js",
   "/api/weather/current/[cityId]/route": "app/api/weather/current/[cityId]/route.js",
   "/api/weather/forecast/[cityId]/route": "app/api/weather/forecast/[cityId]/route.js",
   "/page": "app/page.js",

@@ -41,7 +41,7 @@ export const TEMPERATURE_RANGES = {
 
 // Популярные города
 export const POPULAR_CITIES = [
-  { id: 4368, name: 'Москва' },
+  { id: 524901, name: 'Москва' },
   { id: 4079, name: 'Санкт-Петербург' },
   { id: 5295, name: 'Новосибирск' },
   { id: 4517, name: 'Екатеринбург' },
